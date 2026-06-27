@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Caner'in Bir Günü</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map { height: 100vh; }
+    body { margin: 0; font-family: sans-serif; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map').setView([38.4942, 43.3836], 13); // Van merkez
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    const duraklar = [
+      { lat: 38.495, lng: 43.384, aciklama: "Caner uyanıyor ☀️" },
+      { lat: 38.496, lng: 43.385, aciklama: "Kahvaltı zamanı 🥪" },
+      { lat: 38.497, lng: 43.386, aciklama: "İşe doğru yola çıkıyor 🚌" },
+      { lat: 38.498, lng: 43.387, aciklama: "İş başlıyor 💼" },
+      { lat: 38.499, lng: 43.388, aciklama: "Pastanede mola 🍰" },
+      { lat: 38.500, lng: 43.389, aciklama: "Eve dönüş 🏠" },
+      { lat: 38.501, lng: 43.390, aciklama: "Sunum hazırlığı 👨‍💻" },
+      { lat: 38.502, lng: 43.391, aciklama: "Sunum tamamlandı 🎓" },
+      { lat: 38.503, lng: 43.392, aciklama: "Dinlenme zamanı 🛋️" },
+      { lat: 38.504, lng: 43.393, aciklama: "Uykuya geçiş 😴" }
+    ];
+
+    duraklar.forEach(d => {
+      L.marker([d.lat, d.lng]).addTo(map).bindPopup(d.aciklama);
+    });
+  </script>
+</body>
+</html>

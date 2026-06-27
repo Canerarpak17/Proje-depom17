@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Van'ın Tarihi Medeniyetleri</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      transition: background-color 0.6s ease;
+    }
+    #map {
+      height: 80vh;
+      transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+    }
+    #timeline {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px;
+      background: linear-gradient(to right, #eceff1, #f5f5f5);
+      border-top: 2px solid #ccc;
+    }
+    .period {
+      padding: 10px 16px;
+      background: #dcdcdc;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.4s, transform 0.4s, box-shadow 0.4s;
+    }
+    .period:hover {
+      background: #b0bec5;
+      transform: scale(1.08);
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    .active {
+      background: #455a64;
+      color: white;
+      transform: scale(1.12);
+      box-shadow: 0 0 12px rgba(0,0,0,0.3);
+    }
+    #infoBox {
+      padding: 10px 20px;
+      background: #f0f0f0;
+      border-top: 1px solid #ccc;
+      font-size: 15px;
+      text-align: center;
+    }
+    #searchBox {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-top: 2px solid #ccc;
+      font-size: 16px;
+      outline: none;
+    }
+    @media (max-width: 768px) {
+      #timeline {
+        flex-direction: column;
+        align-items: center;
+      }
+      .period {
+        width: 80%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<input type="text" id="searchBox" placeholder="Yapı ara...">
+<div id="map"></div>
+<div id="timeline">
+  <div class="period active" data-period="kalkolitik">🪨 Kalkolitik</div>
+  <div class="period" data-period="urartu">🏛️ Urartu</div>
+  <div class="period" data-period="pers">⚔️ Pers & Helenistik</div>
+  <div class="period" data-period="bizans">⛪ Bizans & Ermeni</div>
+  <div class="period" data-period="selcuklu">🕌 Selçuklu</div>
+  <div class="period" data-period="osmanli">🕋 Osmanlı</div>
+  <div class="period" data-period="cumhuriyet">🇹🇷 Cumhuriyet</div>
+</div>
+<div id="infoBox"></div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+  const map = L.map('map').setView([38.5, 43.3], 11);
+  const baseMaps = {
+    "Standart": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'),
+    "Topo": L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png')
+  };
+  baseMaps["Standart"].addTo(map);
+  L.control.layers(baseMaps).addTo(map);
+
+  const markers = {
+    kalkolitik: [
+      L.marker([38.45, 43.35]).bindPopup(`<h3>Tilkitepe Höyüğü</h3><p>M.Ö. 4000 civarı yerleşim izleri.</p>`),
+      L.marker([38.47, 43.37]).bindPopup(`<h3>Ernis Mezarlığı</h3><p>Erken Tunç Çağı buluntuları.</p>`)
+    ],
+    urartu: [
+      L.marker([38.4946, 43.3832]).bindPopup(`<h3>Van Kalesi</h3><p>Urartu başkenti Tuspa.</p>`),
+      L.marker([38.507, 43.384]).bindPopup(`<h3>Çavuştepe Kalesi</h3><p>M.Ö. 8. yy Urartu yapısı.</p>`),
+      L.marker([38.52, 43.41]).bindPopup(`<h3>Ayanis Kalesi</h3><p>Kral Rusa tarafından yaptırıldı.</p>`)
+    ],
+    pers: [
+      L.marker([38.48, 43.36]).bindPopup(`<h3>Toprakkale</h3><p>Pers egemenliği döneminde kullanılmış.</p>`),
+      L.marker([38.46, 43.38]).bindPopup(`<h3>Halde Antik Yerleşimi</h3><p>Pers ve Helenistik izler.</p>`)
+    ],
+    bizans: [
+      L.marker([38.33, 43.05]).bindPopup(`<h3>Akdamar Kilisesi</h3><p>Ermeni Krallığı döneminden.</p>`),
+      L.marker([38.49, 43.39]).bindPopup(`<h3>Varagavank Manastırı</h3><p>Bizans sonrası Ermeni yapısı.</p>`),
+      L.marker([38.51, 43.4]).bindPopup(`<h3>Lim Manastırı</h3><p>Ortaçağ dini merkezi.</p>`)
+    ],
+    selcuklu: [
+      L.marker([38.501, 43.4]).bindPopup(`<h3>Malazgirt Etkisi</h3><p>1071 sonrası Türk egemenliği.</p>`),
+      L.marker([38.52, 43.42]).bindPopup(`<h3>Selçuklu Mezarlığı</h3><p>Van çevresinde mezar taşları.</p>`),
+      L.marker([38.49, 43.39]).bindPopup(`<h3>Horhor Medresesi</h3><p>Selçuklu eğitim yapısı.</p>`)
+    ],
+    osmanli: [
+      L.marker([38.495, 43.39]).bindPopup(`<h3>Hüsrev Paşa Camii</h3><p>1548 Osmanlı yapısı.</p>`),
+      L.marker([38.498, 43.388]).bindPopup(`<h3>Eski Van Şehri</h3><p>Osmanlı idari merkezi.</p>`),
+      L.marker([38.505, 43.385]).bindPopup(`<h3>Van Saat Kulesi</h3><p>Son dönem Osmanlı eseri.</p>`)
+    ],
+    cumhuriyet: [
+      L.marker([38.495, 43.37]).bindPopup(`<h3>100. Yıl Üniversitesi</h3><p>1982’de kurulan bölgenin en büyük eğitim kurumu.</p>`),
+      L.marker([38.49, 43.36]).bindPopup(`<h3>Van Müzesi</h3><p>Urartu ve Cumhuriyet dönemi eserleri sergileniyor.</p>`),
+      L.marker([38.51, 43.38]).bindPopup(`<h3>Van Ferit Melen Havalimanı</h3><p>Modern ulaşımın simgesi.</p>`)
+    ]
+  };
+
+  const periodInfo = {
+    kalkolitik: "Kalkolitik dönem, taş ve bakırın birlikte kullanıldığı ilk çağdır.",
+    urartu: "Urartular, Van bölgesinde M.Ö. 9. yy'da güçlü bir krallık kurmuştur.",
+    pers: "Pers ve Helenistik dönemler, Van'ın stratejik önemini artırmıştır.",
+    bizans: "Bizans sonrası Ermeni yapıları dini ve kültürel izler taşır.",
+    selcuklu: "1071 sonrası Van, Selçuklu egemenliğine girmiştir.",
+    osmanli: "Van, Osmanlı döneminde idari ve mimari gelişim yaşamıştır.",
+    cumhuriyet: "Cumhuriyet dönemiyle birlikte modern eğitim ve ulaşım gelişmiştir."
+  };
+
+  const periodColors = {
+    kalkolitik: '#8d6e63',
+    urartu: '#6d4c41',
+    pers: '#4e342e',
+    bizans: '#3e2723',
+    selcuklu: '#263238',
+    osmanli: '#1b1b1b',
+    cumhuriyet: '#37474f'
+  };
+
+  let currentGroup = L.layerGroup().addTo(map);
+
+  function showPeriod(period) {
+    const mapEl = document.getElementById('map');
+    mapEl.style.opacity = 0.2;
+    mapEl.style.transform = 'scale(0.98)';
+
+    setTimeout(() => {
+      map.removeLayer(currentGroup);
+      currentGroup = L.layerGroup(markers[period] || []).addTo(map);
+      map.flyTo([38.5, 43.3], 11, { animate: true, duration: 1.5 });
+      mapEl.style.opacity = 1;
+      mapEl.style.transform = 'scale(1)';
+    }, 400);
+
+    document.querySelectorAll('.period').forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`.period[data-period="${period}"]`).classList.add('active');
+
+    document.getElementById('infoBox').innerText = periodInfo[period] || '';
+    document.body.style.backgroundColor = periodColors[period] || '#ffffff';
+
+    const utterance = new SpeechSynthesisUtterance(periodInfo[period]);
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utterance);
+  }
+
+  document.querySelectorAll('.period').forEach(btn => {
+    btn.addEventListener('click', () => {
+      showPeriod(btn.dataset.period);
+    });
+  });
+
+  document.getElementById('searchBox').addEventListener('input', e => {
+    const query = e.target.value.toLowerCase();
+    currentGroup.eachLayer(marker => {
+      const popupText = marker.getPopup().getContent().toLowerCase();
+      marker.setOpacity(popupText.includes(query) ? 1 : 0.3);
+    });
+  });
+
+  showPeriod('kalkolitik');
+</script>
+
+</body>
+</html>

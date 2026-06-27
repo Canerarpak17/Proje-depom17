@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Van Haritası</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map { height: 100vh; margin: 0; padding: 0; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    var map = L.map('map').setView([38.5012, 43.3665], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap katkıcıları'
+    }).addTo(map);
+
+    // Tıklama ile marker ve açıklama ekle
+    map.on('click', function(e) {
+      var latlng = e.latlng;
+      var aciklama = prompt("Bu noktaya ne yazmak istersin?");
+      if (aciklama) {
+        var marker = L.marker([latlng.lat, latlng.lng]).addTo(map);
+        marker.bindPopup("<b>Açıklama:</b><br>" + aciklama).openPopup();
+      }
+    });
+  </script>
+</body>
+</html>
